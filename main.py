@@ -4,23 +4,23 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template("main.html")
+    return render_template("index.html")
 
-@app.route("/add_data", methods=["GET"])
+@app.route("/add-data", methods=['GET'])
 def add_data_get():
-    return ""
+    return render_template("addData.html")
 
-@app.route("/add_data", methods=["POST"])
+@app.route("/add-data", methods=['POST'])
 def add_data_post():
-    return ""
+    return render_template("addData.html")
 
-@app.route("/practice", methods=["GET"])
+@app.route("/practice", methods=['GET'])
 def practice_get():
-    return ""
+    return render_template("practice.html")
 
-@app.route("/practice", methods=["POST"])
+@app.route("/practice", methods=['POST'])
 def practice_post():
-    return ""
+    return render_template("practice.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
