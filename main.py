@@ -5,8 +5,8 @@ import numpy as np
 
 
 ENCODER = bidict({
-    'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6,'G': 7, 'H': 8, 'I': 9, 'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 
-    'P': 16, 'Q': 17, 'R': 18, 'S': 19, 'T': 20, 'U': 21, 'V': 22, 'W': 23, 'X': 24, 'Y': 25, 'Z': 26
+    'alpha': 1, 'beta': 2, 'gamma': 3, 'delta': 4,'epsilon': 5, 'zeta': 6, 'eta': 7,'theta': 8, 'iota': 9, 'kappa': 10, 'lambda': 11, 'mu': 12, 'nu': 13, 'xi': 14, 'omnicron': 15, 'pi': 16, 'rho': 17, 
+    'sigma': 18, 'tau': 19, 'upsilon': 20, 'phi': 21, 'chi': 22, 'psi': 23, 'omega': 24
 })
 
 app = Flask(__name__)
@@ -21,7 +21,7 @@ def index():
 def add_data_get():
     message = session.get("message", "")
     labels = np.load("data/labels.npy")
-    count = {k : 0 for k in ENCODER.keys}
+    count = {k : 0 for k in ENCODER.keys()}
     for label in labels:
         count[label] += 1
     count = sorted(count.items(), key=lambda x: x[1])
@@ -31,17 +31,26 @@ def add_data_get():
 @app.route("/add-data", methods=['POST'])
 def add_data_post():
     label = request.form["letter"]
-    labels = np.array([label])
+    try:
+        labels = np.load("data/labels.npy")
+    except FileNotFoundError:
+        labels = np.array([])
+    labels = np.append(labels, label)
     np.save("data/labels.npy", labels)
+
     pixels = request.form["pixels"]
     pixels = pixels.split(",")
-    session["message"] = "\"label \" added to the training dataset"
+    session["message"] = f"added \"{label}\" added to the training dataset"
     img = np.array(pixels).astype(float).reshape(1, 50, 50)
-    imgs = np.load("data/images.npy")
-    imgs = np.vstack([img, imgs])
-    np.save("data/images.npy", img)
+    try:
+        imgs = np.load("data/images.npy")
+    except FileNotFoundError:
+        imgs = np.empty((0, 50, 50))
+    imgs = np.vstack([imgs, img])
+    np.save("data/images.npy", imgs)
 
     return redirect(url_for("add_data_get"))
+
 
 @app.route("/practice", methods=['GET'])
 def practice_get():
