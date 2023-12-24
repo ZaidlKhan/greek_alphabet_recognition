@@ -20,6 +20,7 @@ def index():
 @app.route("/add-data", methods=['GET'])
 def add_data_get():
     message = session.get("message", "")
+    letter = choice(list(ENCODER.keys()))
     labels = np.load("data/labels.npy")
     count = {k : 0 for k in ENCODER.keys()}
     for label in labels:
@@ -31,24 +32,17 @@ def add_data_get():
 @app.route("/add-data", methods=['POST'])
 def add_data_post():
     label = request.form["letter"]
-    try:
-        labels = np.load("data/labels.npy")
-    except FileNotFoundError:
-        labels = np.array([])
+    labels = np.load("data/labels.npy")
     labels = np.append(labels, label)
     np.save("data/labels.npy", labels)
 
     pixels = request.form["pixels"]
     pixels = pixels.split(",")
-    session["message"] = f"added \"{label}\" added to the training dataset"
     img = np.array(pixels).astype(float).reshape(1, 50, 50)
-    try:
-        imgs = np.load("data/images.npy")
-    except FileNotFoundError:
-        imgs = np.empty((0, 50, 50))
+    imgs = np.load("data/images.npy")
     imgs = np.vstack([imgs, img])
     np.save("data/images.npy", imgs)
-
+    session["message"] = label + " added to dataset"
     return redirect(url_for("add_data_get"))
 
 
