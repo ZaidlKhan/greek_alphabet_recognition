@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from bidict import bidict
 from random import choice
 import numpy as np
+from tensorflow import keras
 
 
 ENCODER = bidict({
@@ -48,11 +49,22 @@ def add_data_post():
 
 @app.route("/practice", methods=['GET'])
 def practice_get():
-    return render_template("practice.html")
+    letter = choice(list(ENCODER.keys()))
+    return render_template("practice.html", letter=letter, correct="")
+    
 
 @app.route("/practice", methods=['POST'])
 def practice_post():
-    return render_template("practice.html")
+    letter = request.form["letter"]
+    pixels = request.form["pixels"]
+    pixels = pixels.split(",")
+    img = np.array(pixels).astype(float).reshape(1, 50, 50, 1)
+    model = keras.models.load_model("scripts/greek_letter.model")
+    pred_letter =np.argmax(model.predict(img), axis=1)
+    pred_letter = ENCODER.inverse[pred_letter[0]]
+    correct = "yes" if pred_letter == letter else "no"
+    letter = choice(list(ENCODER.keys()))
+    return render_template("practice.html", letter=letter, correct=correct)
 
 if __name__ == "__main__":
     app.run(debug=True)
