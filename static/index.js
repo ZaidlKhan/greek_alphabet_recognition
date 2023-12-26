@@ -121,3 +121,8 @@ function practiceAction() {
   document.getElementById("pixels").value = pixels
   document.getElementById("practice-form").submit()
 }
+
+function guessAction() {
+  document.getElementById("u").value = guess
+  document.getElementById("practice-form").submit()
+}

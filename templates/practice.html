@@ -3,18 +3,18 @@
 
   <div class="main-container">
     <div>
-      <a href="/" class="button is-text">&lt; return to main menu</a>
+      <a href="/" class="button is-text">&lt;Return</a>
     </div>
-    <h1 class="title">practice</h1>
+    <h1 class="title">Practice writing</h1>
     <div>
       <canvas id="canvas" width="200" height="200"></canvas>
     </div>
     <div style="padding: 1rem;">
       {% if correct %}
         {% if correct == 'yes' %}
-          <p style="font-size: 0.75rem;">correct! next question:</p>
+          <p style="font-size: 0.75rem;">Correct! Next Question:</p>
         {% else %}
-          <p style="font-size: 0.75rem;">incorrect! next question:</p>
+          <p style="font-size: 0.75rem;">Incorrect! Next Question:</p>
         {% endif %}
       {% endif %}
       <p style="margin-top: 0.5rem;">Write an uppercase "{{letter.lower()}}"</p>

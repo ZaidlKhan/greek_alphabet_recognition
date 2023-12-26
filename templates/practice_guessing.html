@@ -7,28 +7,27 @@
     </div>
     <h1 class="title">practice guessing</h1>
     <div>
-      <canvas id="canvas" width="200" height="200"></canvas>
+      <img src="data:image/png;base64,{{ image }}" alt="Graph Image" width="200px", height="200px">
     </div>
     <div style="padding: 1rem;">
         <form>
-            <p style="margin-top: 0.5rem;">What letter is this?</p>
+            <p style="margin-top: 0.5rem;">
+              {% if correct %}
+              {% if correct == 'yes' %}
+                <p style="font-size: 0.75rem;">correct! next question:</p>
+              {% else %}
+                <p style="font-size: 0.75rem;">incorrect! next question:</p>
+              {% endif %}
+            {% endif %}
+            What letter is this?</p>
             <input name="u">
-            <input type="submit">
         </form>
     </div>
     <div>
-      <form id="practice-form" action="practice" method="POST">
-        <input id="pixels" name="pixels" type="hidden" />
-        <input id="letter" name="letter" type="hidden" value="{{letter}}" />
-        <button type="button" class="button is-success" onclick="practiceAction()">check my answer</button>
+      <form id="practice-form" action="practice_guessing" method="POST">
+        <button type="button" class="button is-success" onclick="guessAction()">check my answer</button>
       </form>
     </div>
   </div>
-
-  <script>
-    $(document).ready(function() {
-      startCanvas()
-    })
-  </script>
 
 {% endblock %}

@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from bidict import bidict
+import random
 from random import choice
 import numpy as np
 from tensorflow import keras
+import io
+import base64
+import matplotlib.pyplot as plt
 
 
 ENCODER = bidict({
@@ -69,22 +73,31 @@ def practice_post():
 
 @app.route("/practice_guessing", methods=['GET'])
 def practice_guessing_get():
-    letter = choice(list(ENCODER.keys()))
-    return render_template("practice_guessing.html", letter=letter, correct="")
+    imgs = np.load("data/images.npy")
+    random_num = random.randrange(0, len(ENCODER) - 1)
+    imgs.astype("float32") / 255
+    plt.figure()
+    plt.imshow(imgs[random_num])
+    plt.axis('off') 
+    img_buf = io.BytesIO()
+    plt.savefig(img_buf, format='png')
+    plt.close()
+    img_buf.seek(0)
+    img_str = base64.b64encode(img_buf.read()).decode("utf-8")
+    return render_template("practice_guessing.html", image=img_str, num=random_num, correct="")
     
 
 @app.route("/practice_guessing", methods=['POST'])
 def practice_guessing_post():
-    letter = request.form["letter"]
-    pixels = request.form["pixels"]
-    pixels = pixels.split(",")
-    img = np.array(pixels).astype(float).reshape(1, 50, 50, 1)
-    model = keras.models.load_model("scripts/greek_letter.model")
-    pred_letter =np.argmax(model.predict(img), axis=1)
-    pred_letter = ENCODER.inverse[pred_letter[0]]
-    correct = "yes" if pred_letter == letter else "no"
-    letter = choice(list(ENCODER.keys()))
-    return render_template("practice_guessing.html", letter=letter, correct=correct)
+    guess = request.form["u"]
+    num = request.form["num"]
+    if guess == list(ENCODER.keys())[num]:
+        correct = "yes"
+    else:
+        correct = "no"
+
+    return render_template("practice_guessing.html", num=num, correct=correct)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
