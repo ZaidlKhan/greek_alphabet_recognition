@@ -66,6 +66,26 @@ def practice_post():
     letter = choice(list(ENCODER.keys()))
     return render_template("practice.html", letter=letter, correct=correct)
 
+
+@app.route("/practice_guessing", methods=['GET'])
+def practice_guessing_get():
+    letter = choice(list(ENCODER.keys()))
+    return render_template("practice_guessing.html", letter=letter, correct="")
+    
+
+@app.route("/practice_guessing", methods=['POST'])
+def practice_guessing_post():
+    letter = request.form["letter"]
+    pixels = request.form["pixels"]
+    pixels = pixels.split(",")
+    img = np.array(pixels).astype(float).reshape(1, 50, 50, 1)
+    model = keras.models.load_model("scripts/greek_letter.model")
+    pred_letter =np.argmax(model.predict(img), axis=1)
+    pred_letter = ENCODER.inverse[pred_letter[0]]
+    correct = "yes" if pred_letter == letter else "no"
+    letter = choice(list(ENCODER.keys()))
+    return render_template("practice_guessing.html", letter=letter, correct=correct)
+
 if __name__ == "__main__":
     app.run(debug=True)
 
